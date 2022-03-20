@@ -26,6 +26,24 @@ class UserService {
     });
   }
 
+  add(data) {
+    const url = `${this.baseUrl}/users/`;
+    return new Promise((resolve, reject) => {
+      axios
+        .post(url, data, {
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((err) => reject(err));
+    });
+  }
+
   delete(userId) {
     const url = `${this.baseUrl}/users/${userId}`;
     return new Promise((resolve, reject) => {
