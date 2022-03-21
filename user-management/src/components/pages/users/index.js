@@ -1,9 +1,22 @@
+import { Button, Grid, List, ListItem, TextField } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { useEffect, useState, useRef, useContext } from "react";
+import { Link } from "react-router-dom";
 import TokenContext from "../../../common/contexts/tokenContext";
 import withServices from "../../../common/hocs/withServices";
 import UserService from "../../../common/services/UserService";
 
+const useStyles = makeStyles(() => {
+  return {
+    userListContainer: {
+      padding: 5,
+      textAlign: "center",
+    },
+  };
+});
+
 const UsersOverview = ({ services: [userService] }) => {
+  const classes = useStyles();
   const [users, setUsers] = useState([]);
   const [deleteLoadingItem, setDeleteLoadingItem] = useState(null);
   const [newUserName, setNewUserName] = useState("");
@@ -105,116 +118,124 @@ const UsersOverview = ({ services: [userService] }) => {
   };
 
   return (
-    <div>
-      <label>Add new user</label>
-      <button
-        onClick={() => {
-          setDisplayAdd(!displayAdd);
-          nameRef.current.focus();
-          console.log(nameRef);
-        }}
-      >
-        Add user
-      </button>
-      <button
-        onClick={() => {
-          nameRef.current.focus();
-        }}
-      >
-        Focus
-      </button>
-      <div className={`${!displayAdd ? "add-form-invisible" : ""}`}>
-        <input
-          ref={nameRef}
-          placeholder="Name"
-          value={addNewUserName}
-          onChange={(e) => {
-            setAddNewUserName(e.target.value);
+    <Grid container>
+      <Grid item xs={3} lg={12}>
+        <label>Add new user</label>
+        <Button
+          onClick={() => {
+            setDisplayAdd(!displayAdd);
+            nameRef.current.focus();
+            console.log(nameRef);
           }}
-        />
-        <input
-          placeholder="Email"
-          value={addNewUserEmail}
-          onChange={(e) => {
-            setAddNewUserEmail(e.target.value);
+        >
+          Add user
+        </Button>
+        <Button
+          onClick={() => {
+            nameRef.current.focus();
           }}
-        />
-        <input
-          placeholder="Gender"
-          value={addNewUserGender}
-          onChange={(e) => {
-            setAddNewUserGender(e.target.value);
-          }}
-        />
-        <input
-          placeholder="Status"
-          value={addNewUserStatus}
-          onChange={(e) => {
-            setAddNewUserStatus(e.target.value);
-          }}
-        />
-        <button onClick={addUser}>Save</button>
-      </div>
-      <div>
-        {users.map((user) => {
-          return (
-            <div key={user.id}>
-              <div>{user.name}</div>
-              <div>{user.email}</div>
-              <div>{user.gender}</div>
-              <div>{user.status}</div>
-              <button
-                disabled={deleteLoadingItem === user.id}
-                onClick={() => {
-                  setNewUserName(user.name);
-                  setNewUserEmail(user.email);
-                  setUserToUpdate(user);
-                }}
-              >
-                Update
-              </button>
-              <button
-                disabled={deleteLoadingItem === user.id}
-                onClick={() => deleteUser(user.id)}
-              >
-                Delete
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      {userToUpdate && (
-        <div>
-          <input
-            disabled={updateLoading}
-            value={newUserName}
-            placeholder="name"
+        >
+          Focus
+        </Button>
+      </Grid>
+      <Grid item xs={3}>
+        <div className={`${!displayAdd ? "add-form-invisible" : ""}`}>
+          <TextField
+            variant="standard"
+            ref={nameRef}
+            label="Name"
+            value={addNewUserName}
             onChange={(e) => {
-              setNewUserName(e.target.value);
+              setAddNewUserName(e.target.value);
             }}
           />
-          <input
-            disabled={updateLoading}
-            value={newUserEmail}
-            placeholder="email"
+          <TextField
+            label="Email"
+            value={addNewUserEmail}
             onChange={(e) => {
-              setNewUserEmail(e.target.value);
+              setAddNewUserEmail(e.target.value);
             }}
           />
-          <button disabled={updateLoading} onClick={updateUser}>
+          <TextField
+            label="Gender"
+            value={addNewUserGender}
+            onChange={(e) => {
+              setAddNewUserGender(e.target.value);
+            }}
+          />
+          <TextField
+            label="Status"
+            value={addNewUserStatus}
+            onChange={(e) => {
+              setAddNewUserStatus(e.target.value);
+            }}
+          />
+          <Button variant="contained" onClick={addUser}>
             Save
-          </button>
-          <button
-            disabled={updateLoading}
-            onClick={() => {
-              setUserToUpdate(undefined);
-            }}
-          >
-            Cancel
-          </button>
+          </Button>
         </div>
-      )}
-    </div>
+      </Grid>
+      <Grid item xs={6}>
+        <List className={classes.userListContainer}>
+          {users.map((user) => {
+            return (
+              <ListItem key={user.id}>
+                <Link to={`users/${user.id}`}>{user.name}</Link>
+                <Button
+                  variant="contained"
+                  disabled={deleteLoadingItem === user.id}
+                  onClick={() => {
+                    setNewUserName(user.name);
+                    setNewUserEmail(user.email);
+                    setUserToUpdate(user);
+                  }}
+                >
+                  Update
+                </Button>
+                <Button
+                  variant="outlined"
+                  disabled={deleteLoadingItem === user.id}
+                  onClick={() => deleteUser(user.id)}
+                >
+                  Delete
+                </Button>
+              </ListItem>
+            );
+          })}
+        </List>
+        {userToUpdate && (
+          <div>
+            <input
+              disabled={updateLoading}
+              value={newUserName}
+              placeholder="name"
+              onChange={(e) => {
+                setNewUserName(e.target.value);
+              }}
+            />
+            <input
+              disabled={updateLoading}
+              value={newUserEmail}
+              placeholder="email"
+              onChange={(e) => {
+                setNewUserEmail(e.target.value);
+              }}
+            />
+            <button disabled={updateLoading} onClick={updateUser}>
+              Save
+            </button>
+            <button
+              disabled={updateLoading}
+              onClick={() => {
+                setUserToUpdate(undefined);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </Grid>
+    </Grid>
   );
 };
 

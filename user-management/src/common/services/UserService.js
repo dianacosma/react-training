@@ -9,7 +9,25 @@ class UserService {
   }
 
   getAll() {
-    const url = `${this.baseUrl}/users`;
+    const url = `${this.baseUrl}/users/`;
+    return new Promise((resolve, reject) => {
+      axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((err) => reject(err));
+    });
+  }
+
+  getOne(userId) {
+    const url = `${this.baseUrl}/users/${userId}`;
     return new Promise((resolve, reject) => {
       axios
         .get(url, {
